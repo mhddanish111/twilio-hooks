@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 
-const Participant = ({ participant }) => {
+const Participant = ({ participant, onShare,autio_unmute_mute, video_unmute_mute }) => {
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
+  const [audioMute, setAudioMute] = useState(false);
+  const [videoMute, setVideoMute] = useState(false);
+  const [isScreenSharingSupported, setIsScreenSharingSupported] = useState(true);
+  const [isScreenSharingEnabled, setIsScreenSharingEnabled] = useState(false);
 
   const videoRef = useRef();
   const audioRef = useRef();
@@ -62,11 +66,35 @@ const Participant = ({ participant }) => {
     }
   }, [audioTracks]);
 
+  const onVideoButton = () => {
+    setVideoMute(!videoMute)
+    video_unmute_mute();
+  }
+
+  const onAudioButton = () => {
+    setAudioMute(!audioMute)
+    autio_unmute_mute();
+  }
+
+
+
   return (
     <div className="participant">
       <h3>{participant.identity}</h3>
-      <video ref={videoRef} autoPlay={true} />
-      <audio ref={audioRef} autoPlay={true} muted={true} />
+      <video ref={videoRef} autoPlay={true} muted={videoMute}  controls/>
+      <audio ref={audioRef} autoPlay={true} muted={audioMute} controls>
+      </audio>
+
+      <div>
+        <button type="button"
+          onClick={onShare}
+          disabled={!isScreenSharingSupported}
+          >{isScreenSharingEnabled ? "Stop sharing" : "Start sharing"}
+        </button>
+         <button type="button" onClick={() => onVideoButton()}>{videoMute ? "mute": "unmmute"}</button>
+        <button type="button" onClick={() => onAudioButton()}>{audioMute ? "mute": "unmute"}</button>
+      </div>
+      
     </div>
   );
 };
